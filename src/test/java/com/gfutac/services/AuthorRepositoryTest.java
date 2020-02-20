@@ -2,10 +2,13 @@ package com.gfutac.services;
 
 import com.gfutac.config.AbstractIntegrationTest;
 import com.gfutac.entities.Author;
+import com.gfutac.entities.Book;
 import com.gfutac.repositories.AuthorRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
 
 public class AuthorRepositoryTest extends AbstractIntegrationTest {
 
@@ -23,8 +26,23 @@ public class AuthorRepositoryTest extends AbstractIntegrationTest {
         var authorName = "JRR Tolkien";
 
         var author = new Author()
-                .setAuthorId(100)
                 .setName(authorName);
+        var afterSave = this.authorRepository.saveAndFlush(author);
+
+        Assert.assertTrue(this.authorRepository.existsByName(authorName));
+    }
+
+    @Test
+    public void canAddBookToAuthor() {
+        var authorName = "JRR Tolkien";
+
+        var book = new Book()
+                .setName("LOTR");
+
+        var author = new Author()
+                .setAuthorId(100)
+                .setName(authorName)
+                .setBooks(Collections.singletonList(book));
 
         this.authorRepository.save(author);
 
