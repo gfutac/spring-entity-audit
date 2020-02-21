@@ -20,6 +20,6 @@ public class Author {
     @Column(name = "Name")
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "author")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "author", cascade = CascadeType.ALL)
     private List<Book> books;
 }

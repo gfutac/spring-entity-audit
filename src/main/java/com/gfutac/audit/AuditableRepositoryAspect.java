@@ -12,18 +12,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuditableRepositoryAspect {
 
-    @Autowired
-    private AuditService auditService;
-
-    @Pointcut("execution(* org.springframework.data.repository.Repository+.save(..)) || " +
-            "execution(* org.springframework.data.repository.Repository+.saveAll(..)) || " +
-            "execution(* org.springframework.data.repository.Repository+.saveAndFlush(..))")
-    public void save() {}
-
-    @Around("save()")
-    public Object around(ProceedingJoinPoint jp) throws Throwable {
-        Object resultOfSave = jp.proceed();
-        this.auditService.auditSavedObject(resultOfSave);
-        return resultOfSave;
-    }
+//    @Autowired
+//    private AuditService auditService;
+//
+//    @Pointcut("execution(* org.springframework.data.repository.Repository+.save(..)) || " +
+//            "execution(* org.springframework.data.repository.Repository+.saveAll(..)) || " +
+//            "execution(* org.springframework.data.repository.Repository+.saveAndFlush(..))")
+//    public void save() {}
+//
+//    @Around("save()")
+//    public Object around(ProceedingJoinPoint jp) throws Throwable {
+//        Object resultOfSave = jp.proceed();
+//        this.auditService.auditSavedObject(resultOfSave);
+//        return resultOfSave;
+//    }
 }
