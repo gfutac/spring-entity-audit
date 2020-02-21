@@ -1,5 +1,6 @@
 package com.gfutac.audit;
 
+import com.gfutac.service.AuditService;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.*;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -11,23 +12,20 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 
 @Component
-public class PostUpsertEventListener implements PostInsertEventListener, PostUpdateEventListener {
+public class EntityUpdatedEventListener implements PostUpdateEventListener {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    private AuditService auditService;
 
     @PostConstruct
     private void init() {
         SessionFactoryImpl sessionFactory = entityManagerFactory.unwrap(SessionFactoryImpl.class);
         EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
 
-        registry.getEventListenerGroup(EventType.POST_INSERT).appendListener(this);
         registry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
-    }
-
-    @Override
-    public void onPostInsert(PostInsertEvent event) {
-        var x = 0;
     }
 
     @Override
@@ -37,6 +35,17 @@ public class PostUpsertEventListener implements PostInsertEventListener, PostUpd
 
     @Override
     public void onPostUpdate(PostUpdateEvent event) {
-        var x = 0;
+        var updatedEntity = event.getEntity();
+        var isEntityAuditable = false;
+        for (var annotation : updatedEntity.getClass().getAnnotations()) {
+            if (annotation.annotationType().equals(AuditableEntity.class)) {
+                isEntityAuditable = true;
+                break;
+            }
+        }
+
+        if (isEntityAuditable) {
+            this.auditService.auditSavedObject(updatedEntity);
+        }
     }
 }

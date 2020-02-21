@@ -36,9 +36,8 @@ public class AuthorRepositoryTest extends AbstractIntegrationTest {
     public void canAddAuthor() {
         var authorName = "JRR Tolkien";
 
-        var author = new Author()
-                .setName(authorName);
-        var afterSave = this.authorRepository.save(author);
+        var author = new Author().setName(authorName);
+        this.authorRepository.save(author);
 
         Assert.assertTrue(this.authorRepository.existsByName(authorName));
     }
@@ -52,6 +51,7 @@ public class AuthorRepositoryTest extends AbstractIntegrationTest {
 
         var newAuthorName = "Tolken";
         author.setName(newAuthorName);
+        author.setBooks(Collections.singletonList(new Book().setName("LOTR")));
 
         this.authorRepository.flush();
 
@@ -60,12 +60,9 @@ public class AuthorRepositoryTest extends AbstractIntegrationTest {
 
     @Test
     public void authorHasBookAfterAdding() {
-        var authorId = 100L;
         var authorName = "JRR Tolkien";
 
-        var book = new Book()
-                .setName("LOTR");
-
+        var book = new Book().setName("LOTR");
         var author = new Author()
                 .setName(authorName)
                 .setBooks(Collections.singletonList(book));

@@ -1,11 +1,13 @@
 package com.gfutac.entities;
 
+import com.gfutac.audit.AuditableEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
 @Entity
+@AuditableEntity
 @Table(name = "Book")
 @Data
 @Accessors(chain = true)
