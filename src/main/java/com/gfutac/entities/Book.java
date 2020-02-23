@@ -1,6 +1,5 @@
 package com.gfutac.entities;
 
-import com.gfutac.audit.AuditableEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -10,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "Book")
 @Data
 @Accessors(chain = true)
-public class Book implements AuditableEntity {
+public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BookID")

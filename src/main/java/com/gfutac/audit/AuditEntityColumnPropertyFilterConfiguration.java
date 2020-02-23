@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AuditEntityColumnPropertyFilterConfiguration {
 
-    public static final String entityColumnFilterName = "ENTITY_COLUMN_FILTER";
-
     @Bean
     public PropertyFilter entityColumnFilter() {
         return new SimpleBeanPropertyFilter() {

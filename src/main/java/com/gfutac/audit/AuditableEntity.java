@@ -1,9 +1,11 @@
 package com.gfutac.audit;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-
-@JsonFilter(AuditEntityColumnPropertyFilterConfiguration.entityColumnFilterName)
-public interface AuditableEntity {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AuditableEntity {
 }
-
