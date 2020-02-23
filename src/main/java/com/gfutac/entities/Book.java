@@ -7,13 +7,12 @@ import lombok.experimental.Accessors;
 import javax.persistence.*;
 
 @Entity
-@AuditableEntity
 @Table(name = "Book")
 @Data
 @Accessors(chain = true)
-public class Book {
+public class Book implements AuditableEntity {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BookID")
     private long bookId;
 

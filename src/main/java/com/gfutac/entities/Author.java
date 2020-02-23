@@ -8,11 +8,10 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@AuditableEntity
 @Table(name = "Author")
 @Data
 @Accessors(chain = true)
-public class Author {
+public class Author implements AuditableEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
