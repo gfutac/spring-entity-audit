@@ -9,9 +9,12 @@ import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.gfutac.audit.AuditEntity;
 import com.gfutac.audit.AuditableEntity;
+import com.gfutac.audit.EntityStateChangeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Service
 @Slf4j
@@ -40,12 +43,16 @@ public class AuditService {
         this.writer = mapper.writer(filters);
     }
 
-    public void auditSavedObject(Object savedObject) {
+    public void auditSavedObject(Object savedObject, EntityStateChangeType changeType) {
         try {
             var audit = new AuditEntity()
-                    .setAuditEntityType(savedObject.getClass())
+                    .setEntityType(savedObject.getClass())
+                    .setEntityStateChangeType(changeType)
+                    .setEntityStateChangeTime(Instant.now())
                     .setEntity(savedObject);
+
             var json = this.writer.writeValueAsString(audit);
+            // send to audit - logger for now :)
             log.info(json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

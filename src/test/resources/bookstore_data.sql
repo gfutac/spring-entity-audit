@@ -1,12 +1,23 @@
-SET MODE MSSQLServer; --set h2 compatibility mode to SQL Server, to be more similar to production database
+--SET MODE MSSQLServer; --set h2 compatibility mode to SQL Server, to be more similar to production database
 
-insert into Author(AuthorID, Name) values
-    (1, 'John Doe'),
-    (2, 'Danna Cottie'),
-    (3, 'Gabbie Glenton'),
-    (4, 'Gwendolen Kiwitz'),
-    (5, 'Annabell Pettecrew');
+CREATE TABLE IF NOT EXISTS Author(
+  AuthorID bigint auto_increment primary key,
+  Name varchar(64)
+);
+
+CREATE TABLE IF NOT EXISTS Book(
+  BookID bigint auto_increment primary key,
+  Name varchar(128),
+  AuthorID bigint references Author(AuthorID)
+);
+
+insert into Author( Name) values
+    ('John Doe'),
+    ('Danna Cottie'),
+    ('Gabbie Glenton'),
+    ('Gwendolen Kiwitz'),
+    ('Annabell Pettecrew');
 
 
-insert into Book(BookID, Name, AuthorID) values
-    (1, 'My greatest work', 1);
+insert into Book(Name, AuthorID) values
+    ('My greatest work', 1);

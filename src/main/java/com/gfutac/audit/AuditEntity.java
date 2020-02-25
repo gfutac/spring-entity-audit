@@ -4,10 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @Accessors(chain = true)
 public class AuditEntity {
-    private Class<?> auditEntityType;
+    private Class<?> entityType;
+    private EntityStateChangeType entityStateChangeType;
+    private Instant entityStateChangeTime;
     private Object entity;
 }

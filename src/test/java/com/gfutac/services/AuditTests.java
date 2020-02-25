@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 
-public class AuthorRepositoryTest extends AbstractIntegrationTest {
+public class AuditTests extends AbstractIntegrationTest {
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -61,14 +61,37 @@ public class AuthorRepositoryTest extends AbstractIntegrationTest {
     @Test
     public void authorHasBookAfterAdding() {
         var authorName = "JRR Tolkien";
+        var bookName = "LOTR";
 
-        var book = new Book().setName("LOTR");
+        var book = new Book().setName(bookName);
+        this.bookRepository.save(book);
+
         var author = new Author()
-                .setName(authorName)
-                .setBooks(Collections.singletonList(book));
-
+                .setName(authorName);
         author = this.authorRepository.save(author);
+        author.setBooks(Collections.singletonList(book));
+        book.setAuthor(author);
 
+        this.bookRepository.flush();
+        this.authorRepository.flush();
+
+        Assert.assertTrue(this.bookRepository.existsByName(bookName));
+        Assert.assertTrue(this.bookRepository.existsById(book.getBookId()));
+        Assert.assertEquals(author.getAuthorId(), this.bookRepository.findById(book.getBookId()).get().getAuthor().getAuthorId());
         Assert.assertNotEquals(0, author.getBooks().size());
+    }
+
+    @Test
+    public void bookWillBeAudited() {
+        var bookName = "My greatest work 2";
+
+        var book = new Book()
+                .setAuthor(new Author().setAuthorId(1))
+                .setName(bookName);
+
+        this.bookRepository.save(book);
+        book.setName(bookName + "!!!");
+        this.bookRepository.flush();
+        var i = 0;
     }
 }

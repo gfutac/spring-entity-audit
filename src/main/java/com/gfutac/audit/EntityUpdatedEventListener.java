@@ -2,9 +2,7 @@ package com.gfutac.audit;
 
 import com.gfutac.service.AuditService;
 import org.hibernate.event.service.spi.EventListenerRegistry;
-import org.hibernate.event.spi.EventType;
-import org.hibernate.event.spi.PostUpdateEvent;
-import org.hibernate.event.spi.PostUpdateEventListener;
+import org.hibernate.event.spi.*;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 
 @Component
-public class EntityUpdatedEventListener implements PostUpdateEventListener {
+public class EntityUpdatedEventListener implements PostUpdateEventListener, PostInsertEventListener {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -27,6 +25,7 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener {
         SessionFactoryImpl sessionFactory = entityManagerFactory.unwrap(SessionFactoryImpl.class);
         EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
 
+        registry.getEventListenerGroup(EventType.POST_INSERT).appendListener(this);
         registry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
     }
 
@@ -36,11 +35,21 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener {
     }
 
     @Override
+    public void onPostInsert(PostInsertEvent event) {
+        var insertedEntity = event.getEntity();
+        this.doAudit(insertedEntity, EntityStateChangeType.INSERT);
+    }
+
+    @Override
     public void onPostUpdate(PostUpdateEvent event) {
         var updatedEntity = event.getEntity();
+        this.doAudit(updatedEntity, EntityStateChangeType.UPDATE);
+    }
+
+    private void doAudit(Object entity, EntityStateChangeType changeType) {
         var isEntityAuditable = false;
 
-        for (var annotation : updatedEntity.getClass().getAnnotations()) {
+        for (var annotation : entity.getClass().getAnnotations()) {
             if (annotation.annotationType().equals(AuditableEntity.class)) {
                 isEntityAuditable = true;
                 break;
@@ -48,7 +57,7 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener {
         }
 
         if (isEntityAuditable) {
-            this.auditService.auditSavedObject(updatedEntity);
+            this.auditService.auditSavedObject(entity, changeType);
         }
     }
 }
