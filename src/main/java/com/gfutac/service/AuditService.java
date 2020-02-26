@@ -43,7 +43,7 @@ public class AuditService {
         this.writer = mapper.writer(filters);
     }
 
-    public void auditSavedObject(Object savedObject, EntityStateChangeType changeType) {
+    public void auditChangedEntity(Object savedObject, EntityStateChangeType changeType) {
         try {
             var audit = new AuditEntity()
                     .setEntityType(savedObject.getClass())
@@ -55,7 +55,7 @@ public class AuditService {
             // send to audit - logger for now :)
             log.info(json);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("Failed to serialize entity", e, savedObject, changeType);
         }
     }
 }

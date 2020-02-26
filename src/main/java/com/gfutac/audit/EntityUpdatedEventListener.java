@@ -57,7 +57,7 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener, Post
         }
 
         if (isEntityAuditable) {
-            this.auditService.auditSavedObject(entity, changeType);
+            this.auditService.auditChangedEntity(entity, changeType);
         }
     }
 }
