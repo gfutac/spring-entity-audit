@@ -21,7 +21,7 @@
     <properties>
         <java.version>11</java.version>
         <org.projectlombok.version>1.18.8</org.projectlombok.version>
-        <jackson.databind.version>2.9.8</jackson.databind.version>
+        <jackson.databind.version>2.9.10.1</jackson.databind.version>
     </properties>
 
     <dependencies>
