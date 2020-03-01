@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Getter
@@ -14,5 +15,5 @@ public class AuditEntity {
     private EntityStateChangeType entityStateChangeType;
     private Instant entityStateChangeTime;
     private Object entity;
-    private Object entityKey;
+    private Serializable entityKey;
 }

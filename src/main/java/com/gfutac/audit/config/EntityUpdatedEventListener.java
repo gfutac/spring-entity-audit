@@ -12,15 +12,24 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class EntityUpdatedEventListener implements PostUpdateEventListener, PostInsertEventListener {
+
+    private Set<Class<?>> auditableEntities;
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
     @Autowired
     private AuditService auditService;
+
+    public EntityUpdatedEventListener() {
+        this.auditableEntities = new HashSet<>();
+    }
 
     @PostConstruct
     private void init() {
@@ -38,28 +47,27 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener, Post
 
     @Override
     public void onPostInsert(PostInsertEvent event) {
-        var insertedEntity = event.getEntity();
-        this.doAudit(insertedEntity, EntityStateChangeType.INSERT);
+        this.doAudit(event.getEntity(), event.getId(), EntityStateChangeType.INSERT);
     }
 
     @Override
     public void onPostUpdate(PostUpdateEvent event) {
-        var updatedEntity = event.getEntity();
-        this.doAudit(updatedEntity, EntityStateChangeType.UPDATE);
+        this.doAudit(event.getEntity(), event.getId(), EntityStateChangeType.UPDATE);
     }
 
-    private void doAudit(Object entity, EntityStateChangeType changeType) {
-        var isEntityAuditable = false;
-
-        for (var annotation : entity.getClass().getAnnotations()) {
-            if (annotation.annotationType().equals(AuditableEntity.class)) {
-                isEntityAuditable = true;
-                break;
+    private void doAudit(Object entity, Serializable entityKey, EntityStateChangeType changeType) {
+        if (!this.auditableEntities.contains(entity.getClass())) {
+            for (var annotation : entity.getClass().getAnnotations()) {
+                if (annotation.annotationType().equals(AuditableEntity.class)) {
+                    this.auditableEntities.add(entity.getClass());
+                    break;
+                }
             }
         }
 
+        var isEntityAuditable = this.auditableEntities.contains(entity.getClass());
+
         if (isEntityAuditable) {
-            var entityKey = this.entityManagerFactory.getPersistenceUnitUtil().getIdentifier(entity);
             this.auditService.auditChangedEntity(entity, entityKey, changeType);
         }
     }

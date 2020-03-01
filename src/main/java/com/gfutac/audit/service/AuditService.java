@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Service
@@ -47,7 +48,7 @@ public class AuditService {
         this.writer = mapper.writer(filters);
     }
 
-    public void auditChangedEntity(Object savedObject, Object entityKey, EntityStateChangeType changeType) {
+    public void auditChangedEntity(Object savedObject, Serializable entityKey, EntityStateChangeType changeType) {
         try {
             var audit = new AuditEntity()
                     .setEntityType(savedObject.getClass())
