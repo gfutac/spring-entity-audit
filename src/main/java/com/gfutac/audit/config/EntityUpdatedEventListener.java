@@ -1,6 +1,8 @@
-package com.gfutac.audit;
+package com.gfutac.audit.config;
 
-import com.gfutac.service.AuditService;
+import com.gfutac.audit.model.AuditableEntity;
+import com.gfutac.audit.model.EntityStateChangeType;
+import com.gfutac.audit.service.AuditService;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.*;
 import org.hibernate.internal.SessionFactoryImpl;

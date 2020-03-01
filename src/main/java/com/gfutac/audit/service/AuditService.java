@@ -1,4 +1,4 @@
-package com.gfutac.service;
+package com.gfutac.audit.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.gfutac.audit.AuditEntity;
-import com.gfutac.audit.AuditTopic;
-import com.gfutac.audit.AuditableEntity;
-import com.gfutac.audit.EntityStateChangeType;
+import com.gfutac.audit.model.AuditEntity;
+import com.gfutac.jms.AuditTopic;
+import com.gfutac.audit.model.AuditableEntity;
+import com.gfutac.audit.model.EntityStateChangeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

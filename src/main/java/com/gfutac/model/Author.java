@@ -1,6 +1,6 @@
-package com.gfutac.entities;
+package com.gfutac.model;
 
-import com.gfutac.audit.AuditableEntity;
+import com.gfutac.audit.model.AuditableEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

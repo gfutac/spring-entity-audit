@@ -1,8 +1,8 @@
 package com.gfutac.services;
 
 import com.gfutac.config.AbstractIntegrationTest;
-import com.gfutac.entities.Author;
-import com.gfutac.entities.Book;
+import com.gfutac.model.Author;
+import com.gfutac.model.Book;
 import com.gfutac.repositories.AuthorRepository;
 import com.gfutac.repositories.BookRepository;
 import org.junit.Assert;

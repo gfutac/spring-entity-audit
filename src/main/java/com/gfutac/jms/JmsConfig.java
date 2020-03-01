@@ -1,4 +1,4 @@
-package com.gfutac.config;
+package com.gfutac.jms;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

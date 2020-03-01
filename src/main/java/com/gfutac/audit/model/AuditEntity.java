@@ -1,4 +1,4 @@
-package com.gfutac.audit;
+package com.gfutac.audit.model;
 
 import lombok.Getter;
 import lombok.Setter;
