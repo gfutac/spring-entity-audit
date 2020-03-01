@@ -14,4 +14,5 @@ public class AuditEntity {
     private EntityStateChangeType entityStateChangeType;
     private Instant entityStateChangeTime;
     private Object entity;
+    private Object entityKey;
 }

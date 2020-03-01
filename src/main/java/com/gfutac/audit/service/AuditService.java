@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.gfutac.audit.model.AuditEntity;
-import com.gfutac.jms.AuditTopic;
 import com.gfutac.audit.model.AuditableEntity;
 import com.gfutac.audit.model.EntityStateChangeType;
+import com.gfutac.jms.AuditTopic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,13 +47,14 @@ public class AuditService {
         this.writer = mapper.writer(filters);
     }
 
-    public void auditChangedEntity(Object savedObject, EntityStateChangeType changeType) {
+    public void auditChangedEntity(Object savedObject, Object entityKey, EntityStateChangeType changeType) {
         try {
             var audit = new AuditEntity()
                     .setEntityType(savedObject.getClass())
                     .setEntityStateChangeType(changeType)
                     .setEntityStateChangeTime(Instant.now())
-                    .setEntity(savedObject);
+                    .setEntity(savedObject)
+                    .setEntityKey(entityKey);
 
             var json = this.writer.writeValueAsString(audit);
             this.auditTopic.send(json);
