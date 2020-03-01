@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.gfutac.audit.model.AuditEntity;
 import com.gfutac.audit.model.AuditableEntity;
 import com.gfutac.audit.model.EntityStateChangeType;
-import com.gfutac.jms.AuditTopic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -25,11 +25,11 @@ public class AuditService {
 
     private ObjectWriter writer;
 
-    private AuditTopic auditTopic;
+    private Auditor auditor;
 
-    public AuditService(@Autowired PropertyFilter entityColumnFilter, @Autowired AuditTopic auditTopic) {
+    public AuditService(@Autowired PropertyFilter entityColumnFilter, @Qualifier("jmsAuditor") @Autowired Auditor auditor) {
         var mapper = new ObjectMapper();
-        this.auditTopic = auditTopic;
+        this.auditor = auditor;
 
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(entityColumnFilterName, entityColumnFilter);
         mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
@@ -57,7 +57,7 @@ public class AuditService {
                     .setEntityKey(entityKey);
 
             var json = this.writer.writeValueAsString(audit);
-            this.auditTopic.send(json);
+            this.auditor.audit(json);
 
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize entity: {} {}", changeType, savedObject);
