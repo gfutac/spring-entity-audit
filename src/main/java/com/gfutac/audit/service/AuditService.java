@@ -28,9 +28,10 @@ public class AuditService {
 
     private Auditor auditor;
 
-    public AuditService(@Autowired PropertyFilter entityColumnFilter, @Qualifier("jmsAuditor") @Autowired Auditor auditor) {
+    public AuditService(@Autowired PropertyFilter entityColumnFilter, @Autowired AuditorFactoryBean auditorFactoryBean) {
         var mapper = new ObjectMapper();
-        this.auditor = auditor;
+        mapper.findAndRegisterModules();
+        this.auditor = auditorFactoryBean.getObject();
 
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(entityColumnFilterName, entityColumnFilter);
         mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {

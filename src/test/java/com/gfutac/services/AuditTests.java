@@ -94,4 +94,18 @@ public class AuditTests extends AbstractIntegrationTest {
         this.bookRepository.flush();
         var i = 0;
     }
+
+    @Test
+    public void bookWithAuthor() {
+
+        var author = this.authorRepository.findAll().get(3);
+
+        var book = this.bookRepository.findAll().get(0);
+        book.setName("Greatest of them all");
+        //book.setAuthor(author);
+        book.setAuthorId(author.getAuthorId());
+        this.bookRepository.saveAndFlush(book);
+
+        var book2 = this.bookRepository.findById(book.getBookId());
+    }
 }
