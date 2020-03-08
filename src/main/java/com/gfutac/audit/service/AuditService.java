@@ -3,6 +3,7 @@ package com.gfutac.audit.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
@@ -31,6 +32,8 @@ public class AuditService {
     public AuditService(@Autowired PropertyFilter entityColumnFilter, @Autowired AuditorFactoryBean auditorFactoryBean) {
         var mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
         this.auditor = auditorFactoryBean.getObject();
 
         SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(entityColumnFilterName, entityColumnFilter);

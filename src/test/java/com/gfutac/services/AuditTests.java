@@ -51,7 +51,6 @@ public class AuditTests extends AbstractIntegrationTest {
 
         var newAuthorName = "Tolken";
         author.setName(newAuthorName);
-        author.setBooks(Collections.singletonList(new Book().setName("LOTR")));
 
         this.authorRepository.flush();
 
