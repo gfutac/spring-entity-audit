@@ -27,10 +27,6 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener, Post
     @Autowired
     private AuditService auditService;
 
-    public EntityUpdatedEventListener() {
-        this.auditableEntities = new HashSet<>();
-    }
-
     @PostConstruct
     private void init() {
         SessionFactoryImpl sessionFactory = entityManagerFactory.unwrap(SessionFactoryImpl.class);
@@ -38,6 +34,8 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener, Post
 
         registry.getEventListenerGroup(EventType.POST_INSERT).appendListener(this);
         registry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
+
+        this.auditableEntities = new HashSet<>();
     }
 
     @Override
