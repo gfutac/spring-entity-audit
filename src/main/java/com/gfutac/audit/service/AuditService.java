@@ -13,7 +13,6 @@ import com.gfutac.audit.model.AuditableEntity;
 import com.gfutac.audit.model.EntityStateChangeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -65,7 +64,7 @@ public class AuditService {
             this.auditor.audit(json);
 
         } catch (JsonProcessingException e) {
-            log.error("Failed to serialize entity: {} {}", changeType, savedObject);
+            log.error("Failed to serialize entity: {} {} with error {}", changeType, savedObject, e);
         }
     }
 }

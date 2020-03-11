@@ -89,9 +89,6 @@ public class AuditTests extends AbstractIntegrationTest {
                 .setName(bookName);
 
         this.bookRepository.save(book);
-        book.setName(bookName + "!!!");
-        this.bookRepository.flush();
-        var i = 0;
     }
 
     @Test
@@ -101,8 +98,7 @@ public class AuditTests extends AbstractIntegrationTest {
 
         var book = this.bookRepository.findAll().get(0);
         book.setName("Greatest of them all");
-        //book.setAuthor(author);
-        book.setAuthorId(author.getAuthorId());
+        book.setAuthor(author);
         this.bookRepository.saveAndFlush(book);
 
         var book2 = this.bookRepository.findById(book.getBookId());

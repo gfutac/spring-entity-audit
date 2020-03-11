@@ -25,10 +25,6 @@ public class Book {
     @Column(name = "Name")
     private String name;
 
-    @Column(name = "authorId", insertable = false, updatable = false)
-    //@Setter(AccessLevel.NONE)
-    private long authorId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "authorId")
     @ToString.Exclude
