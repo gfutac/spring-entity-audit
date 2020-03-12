@@ -6,9 +6,11 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableJms
+@EnableAsync
 public class JmsConfig {
 
     @Bean

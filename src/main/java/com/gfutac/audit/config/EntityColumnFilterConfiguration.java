@@ -6,15 +6,16 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class AuditEntityColumnPropertyFilterConfiguration {
+import javax.persistence.Column;
+import javax.persistence.Id;
 
-    @Autowired
-    private MetaModelService metaModelService;
+@Configuration
+public class EntityColumnFilterConfiguration {
 
     @Bean
     public PropertyFilter entityColumnFilter() {
@@ -32,8 +33,10 @@ public class AuditEntityColumnPropertyFilterConfiguration {
                             var entity = beanPropertyWriter.get(pojo);
 
                             if (entity != null) {
-                                var key = metaModelService.getEntityKeyName(beanPropertyWriter.getType().getRawClass());
-                                var value = metaModelService.getEntityKeyValue(entity);
+                                var metadata = getIdMetadata(entity);
+
+                                var key = metadata.getKeyName();
+                                var value = metadata.getKeyValue();
 
                                 if (value instanceof Number) {
                                     jgen.writeNumberField(key, Long.parseLong(value.toString()));
@@ -56,5 +59,29 @@ public class AuditEntityColumnPropertyFilterConfiguration {
                 return true;
             }
         };
+    }
+
+    private EntityIdMetadata getIdMetadata(Object entity) throws IllegalAccessException {
+        var type = entity.getClass();
+        var declaredFields = type.getDeclaredFields();
+
+        var result = new EntityIdMetadata();
+
+        for (var field : declaredFields) {
+            if (field.isAnnotationPresent(Column.class) && field.isAnnotationPresent(Id.class)) {
+                field.setAccessible(true);
+                result.setKeyName(field.getName());
+                result.setKeyValue(field.get(entity));
+            }
+        }
+
+        return result;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    private static class EntityIdMetadata {
+        private String keyName;
+        private Object keyValue;
     }
 }

@@ -23,7 +23,7 @@ public class AuditTopic extends ActiveMQTopic {
         try {
             this.jmsTemplate.convertAndSend(this, message);
         } catch (JmsException e) {
-            log.error("Message {} was not published due to an error", message);
+            log.error("Message {} was not published due to an error: {}", message, e);
         }
     }
 }

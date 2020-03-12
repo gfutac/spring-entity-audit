@@ -100,7 +100,5 @@ public class AuditTests extends AbstractIntegrationTest {
         book.setName("Greatest of them all");
         book.setAuthor(author);
         this.bookRepository.saveAndFlush(book);
-
-        var book2 = this.bookRepository.findById(book.getBookId());
     }
 }
