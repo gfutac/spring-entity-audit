@@ -18,6 +18,7 @@ public class MetaModelService {
 
     @PostConstruct
     public void init() {
+        // SessionFactory is Hibernate specific
         this.sessionFactory = emf.unwrap(SessionFactoryImpl.class);
     }
 
