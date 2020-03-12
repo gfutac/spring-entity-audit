@@ -24,7 +24,7 @@ public class AuditService {
         this.auditor = auditorFactoryBean.getObject();
     }
 
-    @Async
+    @Async("auditThreadPool")
     public void auditChangedEntity(Object savedObject, Serializable entityKey, EntityStateChangeType changeType) {
         try {
             var audit = new AuditEntity()
