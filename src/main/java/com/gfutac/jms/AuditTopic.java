@@ -14,7 +14,7 @@ public class AuditTopic extends ActiveMQTopic {
 
     private JmsTemplate jmsTemplate;
 
-    public AuditTopic(@Value("${topics.audit.name}") final String topicName, @Autowired final JmsTemplate jmsTemplate) {
+    public AuditTopic(@Value("${auditor.topic.name}") final String topicName, @Autowired final JmsTemplate jmsTemplate) {
         super(topicName);
         this.jmsTemplate = jmsTemplate;
     }
