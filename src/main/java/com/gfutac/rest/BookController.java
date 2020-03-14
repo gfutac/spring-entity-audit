@@ -1,5 +1,7 @@
-package com.gfutac.rest.dto;
+package com.gfutac.rest;
 
+import com.gfutac.model.Book;
+import com.gfutac.rest.dto.BookDTO;
 import com.gfutac.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/book/v1", produces = MediaType.APPLICATION_JSON_VALUE)
-public class BookController {
+public class BookController extends BaseAuditController<Book> {
 
     @Autowired
     private BookService bookService;

@@ -1,5 +1,6 @@
 package com.gfutac.rest;
 
+import com.gfutac.model.Author;
 import com.gfutac.rest.dto.AuthorDTO;
 import com.gfutac.rest.dto.BookDTO;
 import com.gfutac.service.AuthorService;
@@ -12,7 +13,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/author/v1", produces = MediaType.APPLICATION_JSON_VALUE)
-public class AuthorController {
+public class AuthorController extends BaseAuditController<Author> {
 
     @Autowired
     private AuthorService authorService;
