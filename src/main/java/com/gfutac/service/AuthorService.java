@@ -1,7 +1,5 @@
 package com.gfutac.service;
 
-import com.gfutac.model.Author;
-import com.gfutac.model.Book;
 import com.gfutac.repositories.AuthorRepository;
 import com.gfutac.repositories.BookRepository;
 import com.gfutac.rest.dto.AuthorDTO;

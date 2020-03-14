@@ -1,9 +1,6 @@
 package com.gfutac.rest;
 
-import com.gfutac.model.Author;
-import com.gfutac.repositories.AuthorRepository;
 import com.gfutac.rest.dto.AuthorDTO;
-import com.gfutac.rest.dto.AuthorMapper;
 import com.gfutac.rest.dto.BookDTO;
 import com.gfutac.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,8 +13,8 @@ public class BookService {
     private BookRepository bookRepository;
 
     public BookDTO updateBook(long bookId, BookDTO bookDTO) {
-        var book = BookMapper.INSTANCE.toEntity(bookDTO);
-        book.setBookId(bookId);
+        var book = this.bookRepository.getOne(bookId);
+        book.setName(bookDTO.getName());
         book = this.bookRepository.saveAndFlush(book);
 
         return BookMapper.INSTANCE.toDTO(book);

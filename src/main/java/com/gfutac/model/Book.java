@@ -1,9 +1,7 @@
 package com.gfutac.model;
 
 import com.gfutac.audit.model.AuditableEntity;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
