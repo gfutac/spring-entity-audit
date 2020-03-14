@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.hibernate.Hibernate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -62,6 +63,8 @@ public class EntityColumnFilterConfiguration {
     }
 
     private EntityIdMetadata getIdMetadata(Object entity) throws IllegalAccessException {
+        entity = Hibernate.unproxy(entity);
+
         var type = entity.getClass();
         var declaredFields = type.getDeclaredFields();
 
