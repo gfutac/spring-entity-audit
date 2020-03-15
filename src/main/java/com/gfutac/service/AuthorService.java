@@ -1,11 +1,12 @@
 package com.gfutac.service;
 
+import com.gfutac.exceptions.NoSuchEntityException;
 import com.gfutac.repositories.AuthorRepository;
 import com.gfutac.repositories.BookRepository;
 import com.gfutac.rest.dto.AuthorDTO;
-import com.gfutac.rest.dto.AuthorMapper;
+import com.gfutac.rest.mapping.AuthorMapper;
 import com.gfutac.rest.dto.BookDTO;
-import com.gfutac.rest.dto.BookMapper;
+import com.gfutac.rest.mapping.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,12 @@ public class AuthorService {
     }
 
     public AuthorDTO getAuthor(long authorId) {
-        var author = this.authorRepository.getOne(authorId);
+        var author = this.authorRepository.findById(authorId).orElseThrow(() -> new NoSuchEntityException(authorId, "Author not found"));;
         return AuthorMapper.INSTANCE.toDTO(author);
     }
 
     public BookDTO addBookToAuthor(long authorId, BookDTO bookDTO) {
-        var author = this.authorRepository.getOne(authorId);
+        var author = this.authorRepository.findById(authorId).orElseThrow(() -> new NoSuchEntityException(authorId, "Author not found"));;
         var book = BookMapper.INSTANCE.toEntity(bookDTO);
 
         book.setAuthor(author);

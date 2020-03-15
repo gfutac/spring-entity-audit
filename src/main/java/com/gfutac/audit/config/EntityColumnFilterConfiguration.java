@@ -9,14 +9,29 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Column;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Id;
 
 @Configuration
 public class EntityColumnFilterConfiguration {
+
+    @Autowired
+    private EntityManagerFactory emf;
+
+    private SessionFactory sessionFactory;
+
+    @PostConstruct
+    public void init() {
+        this.sessionFactory = emf.unwrap(SessionFactoryImpl.class);
+    }
 
     @Bean
     public PropertyFilter entityColumnFilter() {
@@ -34,7 +49,7 @@ public class EntityColumnFilterConfiguration {
                             var entity = beanPropertyWriter.get(pojo);
 
                             if (entity != null) {
-                                var metadata = getIdMetadata(entity);
+                                var metadata = getIdMetadata(entity, beanPropertyWriter);
 
                                 var key = metadata.getKeyName();
                                 var value = metadata.getKeyValue();
@@ -62,21 +77,16 @@ public class EntityColumnFilterConfiguration {
         };
     }
 
-    private EntityIdMetadata getIdMetadata(Object entity) throws IllegalAccessException {
-        entity = Hibernate.unproxy(entity);
-
-        var type = entity.getClass();
-        var declaredFields = type.getDeclaredFields();
-
+    private EntityIdMetadata getIdMetadata(Object entity, BeanPropertyWriter beanPropertyWriter) throws Exception {
         var result = new EntityIdMetadata();
 
-        for (var field : declaredFields) {
-            if (field.isAnnotationPresent(Column.class) && field.isAnnotationPresent(Id.class)) {
-                field.setAccessible(true);
-                result.setKeyName(field.getName());
-                result.setKeyValue(field.get(entity));
-            }
-        }
+        var entityMetaModel = sessionFactory.getMetamodel().entity(beanPropertyWriter.getType().getRawClass());
+        var keyType = entityMetaModel.getIdType().getJavaType();
+
+        var key =  entityMetaModel.getDeclaredId(keyType).getName();
+        var value = emf.getPersistenceUnitUtil().getIdentifier(entity);
+        result.setKeyName(key);
+        result.setKeyValue(value);
 
         return result;
     }

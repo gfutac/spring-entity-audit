@@ -1,6 +1,7 @@
-package com.gfutac.rest.dto;
+package com.gfutac.rest.mapping;
 
 import com.gfutac.model.Book;
+import com.gfutac.rest.dto.BookDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

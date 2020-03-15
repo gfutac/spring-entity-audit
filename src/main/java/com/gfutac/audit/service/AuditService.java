@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,6 +32,7 @@ public class AuditService {
     }
 
     @Async("auditThreadPool")
+    @Transactional
     public void auditChangedEntity(Object savedObject, Object entityKey, EntityStateChangeType changeType) {
         try {
             var audit = new AuditEntity()

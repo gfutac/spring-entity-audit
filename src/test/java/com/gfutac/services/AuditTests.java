@@ -5,6 +5,10 @@ import com.gfutac.model.Author;
 import com.gfutac.model.Book;
 import com.gfutac.repositories.AuthorRepository;
 import com.gfutac.repositories.BookRepository;
+import com.gfutac.rest.dto.AuthorDTO;
+import com.gfutac.rest.dto.BookDTO;
+import com.gfutac.rest.mapping.AuthorMapper;
+import com.gfutac.rest.mapping.BookMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,5 +104,32 @@ public class AuditTests extends AbstractIntegrationTest {
         book.setName("Greatest of them all");
         book.setAuthor(author);
         this.bookRepository.saveAndFlush(book);
+    }
+
+    @Test
+    public void addAuthorFromDTO() {
+        var dto = new AuthorDTO();
+        dto.setName("J.R.R Tolkien");
+
+        var author = AuthorMapper.INSTANCE.toEntity(dto);
+        author = this.authorRepository.saveAndFlush(author);
+        var result = AuthorMapper.INSTANCE.toDTO(author);
+
+        Assert.assertEquals(dto.getName(), result.getName());
+    }
+
+    @Test
+    public void addBookToAuthor() {
+        var authorId = 1L;
+        var bookDTO = new BookDTO();
+        bookDTO.setName("The Lord of the Rings");
+
+        var author = this.authorRepository.getOne(authorId);
+        var book = BookMapper.INSTANCE.toEntity(bookDTO);
+
+        book.setAuthor(author);
+        book = this.bookRepository.saveAndFlush(book);
+
+        Assert.assertEquals(book.getAuthor().getAuthorId(), authorId);
     }
 }
