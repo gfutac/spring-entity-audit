@@ -18,24 +18,30 @@ public class AuthorService {
 
     @Autowired
     private BookRepository bookRepository;
+    
+    @Autowired
+    private AuthorMapper authorMapper;
+
+    @Autowired
+    private BookMapper bookMapper;
 
     public AuthorDTO addAuthor(AuthorDTO dto) {
-        var author = AuthorMapper.INSTANCE.toEntity(dto);
+        var author = this.authorMapper.toEntity(dto);
         author = this.authorRepository.saveAndFlush(author);
-        return AuthorMapper.INSTANCE.toDTO(author);
+        return this.authorMapper.toDTO(author);
     }
 
     public AuthorDTO getAuthor(long authorId) {
         var author = this.authorRepository.findById(authorId).orElseThrow(() -> new NoSuchEntityException(authorId, "Author not found"));;
-        return AuthorMapper.INSTANCE.toDTO(author);
+        return this.authorMapper.toDTO(author);
     }
 
     public BookDTO addBookToAuthor(long authorId, BookDTO bookDTO) {
         var author = this.authorRepository.findById(authorId).orElseThrow(() -> new NoSuchEntityException(authorId, "Author not found"));;
-        var book = BookMapper.INSTANCE.toEntity(bookDTO);
+        var book = this.bookMapper.toEntity(bookDTO);
 
         book.setAuthor(author);
         book = this.bookRepository.saveAndFlush(book);
-        return BookMapper.INSTANCE.toDTO(book);
+        return this.bookMapper.toDTO(book);
     }
 }

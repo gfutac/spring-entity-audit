@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.gfutac.audit.model.AuditEntity;
+import com.gfutac.audit.model.AuditEntityDTO;
+import com.gfutac.audit.model.AuditEntityMapper;
 import com.gfutac.audit.model.EntityStateChangeType;
+import com.gfutac.rest.mapping.EntityToDtoMapperFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +23,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,6 +31,12 @@ public class AuditService {
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private EntityToDtoMapperFactory entityToDtoMapperFactory;
+
+    @Autowired
+    private AuditEntityMapper auditEntityMapper;
 
     private ObjectWriter entityWriter;
     private Auditor auditor;
@@ -71,7 +81,7 @@ public class AuditService {
      * @param key        Primary key of the entity to be searched for.
      * @return List of {@link AuditEntity} records.
      */
-    public List<AuditEntity> getAuditEntriesForEntity(Class<?> entityType, Object key) {
+    public List<AuditEntityDTO> getAuditEntriesForEntity(Class<?> entityType, Object key) {
 
         var queryParamBuilder = UriComponentsBuilder.fromUriString(this.auditLogEndpoint)
                 .queryParam("entityType", entityType.getName())
@@ -79,7 +89,15 @@ public class AuditService {
 
         var restResult = new RestTemplate().getForEntity(queryParamBuilder.buildAndExpand(this.auditLogEndpoint).toUri(), AuditEntity[].class);
         if (restResult.getBody() != null) {
-            return Arrays.asList(restResult.getBody());
+            var tmp = Arrays.asList(restResult.getBody());
+            var result = tmp.stream().map(ae -> {
+                var deserialized = this.deserializeAuditEntityToEntity(ae);
+                var dto = this.entityToDtoMapperFactory.getMapper(ae.getEntityType()).toDTO(deserialized);
+                ae.setEntity(dto);
+                return this.auditEntityMapper.toDTO(ae);
+            }).collect(Collectors.toList());
+
+            return result;
         }
 
         return null;

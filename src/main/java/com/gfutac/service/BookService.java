@@ -13,11 +13,14 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private BookMapper bookMapper;
+
     public BookDTO updateBook(long bookId, BookDTO bookDTO) {
         var book = this.bookRepository.findById(bookId).orElseThrow(() -> new NoSuchEntityException(bookId, "Book not found"));
         book.setName(bookDTO.getName());
         book = this.bookRepository.saveAndFlush(book);
 
-        return BookMapper.INSTANCE.toDTO(book);
+        return this.bookMapper.toDTO(book);
     }
 }

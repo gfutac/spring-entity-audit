@@ -1,6 +1,7 @@
 package com.gfutac.rest;
 
 import com.gfutac.audit.model.AuditEntity;
+import com.gfutac.audit.model.AuditEntityDTO;
 import com.gfutac.audit.service.AuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class BaseAuditController<T> {
      * @return List of @{@link AuditEntity} records
      */
     @GetMapping(value = "/audit-log/{key}")
-    public List<AuditEntity> getAuditEntriesForEntity(@PathVariable Object key) {
+    public List<AuditEntityDTO> getAuditEntriesForEntity(@PathVariable Object key) {
 
         try {
             var type = this.getClass().getGenericSuperclass();

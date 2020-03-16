@@ -22,6 +22,12 @@ public class AuditTests extends AbstractIntegrationTest {
 
     @Autowired
     private BookRepository bookRepository;
+    
+    @Autowired
+    private AuthorMapper authorMapper;
+
+    @Autowired
+    private BookMapper bookMapper;
 
     @Test
     public void getAllUsers() {
@@ -111,9 +117,9 @@ public class AuditTests extends AbstractIntegrationTest {
         var dto = new AuthorDTO();
         dto.setName("J.R.R Tolkien");
 
-        var author = AuthorMapper.INSTANCE.toEntity(dto);
+        var author = this.authorMapper.toEntity(dto);
         author = this.authorRepository.saveAndFlush(author);
-        var result = AuthorMapper.INSTANCE.toDTO(author);
+        var result = this.authorMapper.toDTO(author);
 
         Assert.assertEquals(dto.getName(), result.getName());
     }
@@ -125,7 +131,7 @@ public class AuditTests extends AbstractIntegrationTest {
         bookDTO.setName("The Lord of the Rings");
 
         var author = this.authorRepository.getOne(authorId);
-        var book = BookMapper.INSTANCE.toEntity(bookDTO);
+        var book = this.bookMapper.toEntity(bookDTO);
 
         book.setAuthor(author);
         book = this.bookRepository.saveAndFlush(book);
