@@ -36,7 +36,7 @@ public class BaseAuditController<T> {
                 return this.auditService.getAuditEntriesForEntity(clazz, key);
             }
         } catch (ClassNotFoundException e) {
-            log.error("Died.", e);
+            log.error("Died. I don't know that type.", e);
         }
 
         return null;

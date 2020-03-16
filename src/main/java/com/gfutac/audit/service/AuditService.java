@@ -40,9 +40,10 @@ public class AuditService {
 
     /**
      * Audits saved object. Only inserts and updates are tracked here.
+     *
      * @param savedObject Hibernate entity that was saved (inserted or updated) to database.
-     * @param entityKey Primary key of saved entity.
-     * @param changeType Type of change, insert or update
+     * @param entityKey   Primary key of saved entity.
+     * @param changeType  Type of change, insert or update
      */
     @Async("auditThreadPool")
     @Transactional
@@ -65,8 +66,9 @@ public class AuditService {
 
     /**
      * Gets history records from audit-log-service for given
+     *
      * @param entityType Type of entity to be searched for.
-     * @param key Primary key of the entity to be searched for.
+     * @param key        Primary key of the entity to be searched for.
      * @return List of {@link AuditEntity} records.
      */
     public List<AuditEntity> getAuditEntriesForEntity(Class<?> entityType, Object key) {
@@ -85,6 +87,7 @@ public class AuditService {
 
     /**
      * Deserializes AuditEntity fetched from audit-log-service to specific @{@link javax.persistence.Entity}
+     *
      * @param auditEntity record from audit-log-service
      * @return Deserialized @{@link javax.persistence.Entity}
      */
@@ -93,10 +96,11 @@ public class AuditService {
 
         var entityType = auditEntity.getEntityType();
 
+        // Create "empty" instance where result will be stored. Since result will be hibernate entity we can be sure no args constructor exist.
+        // since it is a hibernate requirement. hibernate relies on newInstance() for creation of new instances too.
         try {
-            // Create "empty" instance where result will be stored. Since result will be hibernate entity we can be sure no args constructor exist.
-            // since it is a hibernate requirement. hibernate relies on newInstance() for creation of new instances too.
             result = entityType.getDeclaredConstructor().newInstance();
+
             var fields = entityType.getDeclaredFields();
 
             // Object will be serialized as Map when coming in JSON from rest calls
@@ -105,40 +109,44 @@ public class AuditService {
 
                 var mapper = new ObjectMapper();
                 for (var field : fields) {
-                    // if we want to use reflection to set fields this is required
-                    field.setAccessible(true);
+                    try {
+                        // if we want to use reflection to set fields this is required
+                        field.setAccessible(true);
 
-                    // there are two cases
-                    // fields annotated with javax.persistence.Column are most often basic types
-                    if (field.isAnnotationPresent(javax.persistence.Column.class)) {
-                        // if it is a string just read
-                        if (field.getType() == java.lang.String.class) {
-                            var value = asMap.get(field.getName());
-                            field.set(result, value);
-                        } else {
-                            // otherwise try to convert it to appropriate type
-                            var value = mapper.convertValue(asMap.get(field.getName()), field.getType());
-                            field.set(result, value);
+                        // there are two cases
+                        // fields annotated with javax.persistence.Column are most often basic types
+                        if (field.isAnnotationPresent(javax.persistence.Column.class)) {
+                            // if it is a string just read
+                            if (field.getType() == java.lang.String.class) {
+                                var value = asMap.get(field.getName());
+                                field.set(result, value);
+                            } else {
+                                // otherwise try to convert it to appropriate type
+                                var value = mapper.convertValue(asMap.get(field.getName()), field.getType());
+                                field.set(result, value);
+                            }
+                        } else if (field.isAnnotationPresent(javax.persistence.JoinColumn.class)) {
+                            // second case is for javax.persistence.JoinColumn
+                            // here we have referenced entity. we first extract name of the primary key of referenced entity
+                            var ann = field.getAnnotation(javax.persistence.JoinColumn.class);
+                            var refColumnKeyName = ann.name();
+                            // it's type
+                            var refColumnKeyType = field.getType().getDeclaredField(refColumnKeyName).getType();
+                            // and then we can get actual value of the PK of the referenced entity
+                            var refColumnPK = mapper.convertValue(asMap.get(refColumnKeyName), refColumnKeyType);
+
+                            // "low-level" call to EntityManager to find desired entity (no spring data here :))
+                            var refEntity = em.find(field.getType(), refColumnPK);
+                            field.set(result, refEntity);
                         }
-                    } else if (field.isAnnotationPresent(javax.persistence.JoinColumn.class)) {
-                        // second case is for javax.persistence.JoinColumn
-                        // here we have referenced entity. we first extract name of the primary key of referenced entity
-                        var ann = field.getAnnotation(javax.persistence.JoinColumn.class);
-                        var refColumnKeyName = ann.name();
-                        // it's type
-                        var refColumnKeyType = field.getType().getDeclaredField(refColumnKeyName).getType();
-                        // and then we can get actual value of the PK of the referenced entity
-                        var refColumnPK = mapper.convertValue(asMap.get(refColumnKeyName), refColumnKeyType);
-
-                        // "low-level" call to EntityManager to find desired entity (no spring data here :))
-                        var refEntity = em.find(field.getType(), refColumnPK);
-                        field.set(result, refEntity);
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        log.error("Failed to construct value for " + field.getName() + " from type " + field.getType(), e);
                     }
                 }
             }
-        } catch (InvocationTargetException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
-            // in case of any exception we will not get result. this could be optimized to be on field level
-            log.error("Failed to construct resulting object of type " + entityType.getTypeName(), e);
+
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            log.error("Failed to construct object of type " + entityType, e);
         }
 
         return result;
