@@ -1,7 +1,7 @@
 package com.gfutac.service;
 
 import com.gfutac.exceptions.NoSuchEntityException;
-import com.gfutac.repositories.BookRepository;
+import com.gfutac.model.repositories.BookRepository;
 import com.gfutac.rest.dto.BookDTO;
 import com.gfutac.rest.mapping.BookMapper;
 import org.springframework.beans.factory.annotation.Autowired;

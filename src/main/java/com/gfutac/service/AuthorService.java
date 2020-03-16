@@ -1,8 +1,8 @@
 package com.gfutac.service;
 
 import com.gfutac.exceptions.NoSuchEntityException;
-import com.gfutac.repositories.AuthorRepository;
-import com.gfutac.repositories.BookRepository;
+import com.gfutac.model.repositories.AuthorRepository;
+import com.gfutac.model.repositories.BookRepository;
 import com.gfutac.rest.dto.AuthorDTO;
 import com.gfutac.rest.mapping.AuthorMapper;
 import com.gfutac.rest.dto.BookDTO;

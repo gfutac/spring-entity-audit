@@ -27,9 +27,11 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener, Post
 
     @PostConstruct
     private void init() {
+        // hibernate specific API implementation
         SessionFactoryImpl sessionFactory = entityManagerFactory.unwrap(SessionFactoryImpl.class);
         EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService(EventListenerRegistry.class);
 
+        // register post insert/update listeners
         registry.getEventListenerGroup(EventType.POST_INSERT).appendListener(this);
         registry.getEventListenerGroup(EventType.POST_UPDATE).appendListener(this);
 
@@ -52,6 +54,7 @@ public class EntityUpdatedEventListener implements PostUpdateEventListener, Post
     }
 
     private void doAudit(Object entity, Serializable entityKey, EntityStateChangeType changeType) {
+        // checks if saved entity is @AuditableEntity and audits it if so
         if (!this.auditableEntities.contains(entity.getClass())) {
             for (var annotation : entity.getClass().getAnnotations()) {
                 if (annotation.annotationType().equals(AuditableEntity.class)) {

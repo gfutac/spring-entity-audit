@@ -17,13 +17,20 @@ public class EntityWriterConfiguration {
 
     private static final String entityColumnFilterName = "ENTITY_COLUMN_FILTER";
 
+    /**
+     * ObjectWriter that will be used for serializing saved Hibernate entities annotated with @{@link AuditableEntity}
+     * @param entityColumnFilter Injected PropertyFilter from {@link EntityColumnFilterConfiguration}
+     * @return customized {@link ObjectWriter}
+     */
     @Bean
     public ObjectWriter entityWriter(@Autowired PropertyFilter entityColumnFilter) {
         var mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(entityColumnFilterName, entityColumnFilter);
+        // Customized annotation inspector. By default it tries to find all classes
+        // annotated with @JsonFilter("name-of-filter"), but goal here was to
+        // use only @AuditableEntity annotation on classes that we want to audit
         mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
             @Override
             public Object findFilterId(Annotated a) {
@@ -36,6 +43,7 @@ public class EntityWriterConfiguration {
             }
         });
 
+        SimpleFilterProvider filters = new SimpleFilterProvider().addFilter(entityColumnFilterName, entityColumnFilter);
         return mapper.writer(filters);
     }
 }

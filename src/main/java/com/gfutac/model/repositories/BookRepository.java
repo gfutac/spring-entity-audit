@@ -1,4 +1,4 @@
-package com.gfutac.repositories;
+package com.gfutac.model.repositories;
 
 import com.gfutac.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
