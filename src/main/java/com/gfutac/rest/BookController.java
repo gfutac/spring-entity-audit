@@ -1,6 +1,7 @@
 package com.gfutac.rest;
 
 import com.gfutac.model.Book;
+import com.gfutac.rest.dto.BookChapterDTO;
 import com.gfutac.rest.dto.BookDTO;
 import com.gfutac.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,4 +21,11 @@ public class BookController extends BaseAuditController<Book> {
     public BookDTO updateBook(@PathVariable long bookId, @RequestBody BookDTO bookDTO) {
         return this.bookService.updateBook(bookId, bookDTO);
     }
+
+    @PutMapping(value = "/book/{bookId}/add-chapter")
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookChapterDTO addChapter(@PathVariable long bookId, @RequestBody BookChapterDTO bookChapterDTO) {
+        return this.bookService.addChapterToBook(bookId, bookChapterDTO);
+    }
+
 }
