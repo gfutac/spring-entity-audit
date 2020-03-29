@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class BookChapterDTO {
     private String name;
-    private BookDTO book;
+    private String book;
+    private String author;
 }
