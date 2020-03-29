@@ -1,5 +1,7 @@
 package com.gfutac.audit.service;
 
+import com.gfutac.audit.model.AuditEntity;
+
 public interface Auditor {
-    void audit(Object message);
+    void audit(AuditEntity message);
 }

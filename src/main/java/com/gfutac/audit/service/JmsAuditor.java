@@ -1,5 +1,8 @@
 package com.gfutac.audit.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.gfutac.audit.model.AuditEntity;
 import com.gfutac.jms.AuditTopic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,19 @@ import org.springframework.stereotype.Component;
 public class JmsAuditor implements Auditor {
 
     @Autowired
+    private ObjectWriter entityWriter;
+
+    @Autowired
     private AuditTopic auditTopic;
 
     @Override
-    public void audit(Object message) {
-        this.auditTopic.send(message);
+    public void audit(AuditEntity auditEntity) {
+
+        try {
+            var message = this.entityWriter.writeValueAsString(auditEntity);
+            this.auditTopic.send(message);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize entity: {} {} with error {}", auditEntity.getEntityStateChangeType(), auditEntity.getEntity(), e);
+        }
     }
 }
