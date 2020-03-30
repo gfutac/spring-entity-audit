@@ -1,6 +1,5 @@
 package com.gfutac.audit.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.gfutac.audit.model.AuditEntity;
@@ -58,20 +57,14 @@ public class AuditService {
     @Async("auditThreadPool")
     @Transactional
     public void auditChangedEntity(Object savedObject, Object entityKey, EntityStateChangeType changeType) {
-        try {
-            var audit = new AuditEntity()
-                    .setEntityType(savedObject.getClass())
-                    .setEntityStateChangeType(changeType)
-                    .setEntityStateChangeTime(Instant.now())
-                    .setEntity(savedObject)
-                    .setEntityKey(entityKey);
+        var auditEntity = new AuditEntity()
+                .setEntityType(savedObject.getClass())
+                .setEntityStateChangeType(changeType)
+                .setEntityStateChangeTime(Instant.now())
+                .setEntity(savedObject)
+                .setEntityKey(entityKey);
 
-            var json = this.entityWriter.writeValueAsString(audit);
-            this.auditor.audit(json);
-
-        } catch (JsonProcessingException e) {
-            log.error("Failed to serialize entity: {} {} with error {}", changeType, savedObject, e);
-        }
+        this.auditor.audit(auditEntity);
     }
 
     /**
