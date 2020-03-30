@@ -1,7 +1,6 @@
 package com.gfutac.audit.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.gfutac.audit.model.AuditEntity;
 import com.gfutac.audit.model.AuditEntityDTO;
 import com.gfutac.audit.model.AuditEntityMapper;
@@ -37,12 +36,10 @@ public class AuditService {
     @Autowired
     private AuditEntityMapper auditEntityMapper;
 
-    private ObjectWriter entityWriter;
     private Auditor auditor;
     private String auditLogEndpoint;
 
-    public AuditService(@Autowired ObjectWriter entityWriter, @Autowired AuditorFactoryBean auditorFactoryBean, @Value("${auditor.audit-log.endpoint}") String auditLogEndpoint) {
-        this.entityWriter = entityWriter;
+    public AuditService(@Autowired AuditorFactoryBean auditorFactoryBean, @Value("${auditor.audit-log.endpoint}") String auditLogEndpoint) {
         this.auditor = auditorFactoryBean.getObject();
         this.auditLogEndpoint = auditLogEndpoint;
     }
