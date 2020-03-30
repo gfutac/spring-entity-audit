@@ -1,9 +1,9 @@
-package com.gfutac.audit.service;
+package com.gfutac.jms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.gfutac.audit.model.AuditEntity;
-import com.gfutac.jms.AuditTopic;
+import com.gfutac.audit.service.Auditor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
