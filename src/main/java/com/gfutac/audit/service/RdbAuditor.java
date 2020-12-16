@@ -1,7 +1,6 @@
 package com.gfutac.audit.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.gfutac.audit.model.AuditEntity;
 import com.gfutac.model.repositories.AuditEntityRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class RdbAuditor implements Auditor {
-
-    @Autowired
-    private ObjectWriter entityWriter;
+public class RdbAuditor extends Auditor {
 
     @Autowired
     private AuditEntityRepository auditEntityRepository;
@@ -29,7 +25,7 @@ public class RdbAuditor implements Auditor {
                     .setEntityKey(message.getEntityKey().toString())
                     .setEntityStateChangeTime(message.getEntityStateChangeTime())
                     .setEntityStateChangeType(message.getEntityStateChangeType())
-                    .setEntity(this.entityWriter.writeValueAsString(message.getEntity()));
+                    .setEntity(this.serializeEntity(message.getEntity()));
 
             this.auditEntityRepository.saveAndFlush(auditEntity);
 

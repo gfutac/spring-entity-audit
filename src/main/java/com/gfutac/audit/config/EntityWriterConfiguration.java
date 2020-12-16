@@ -28,7 +28,7 @@ public class EntityWriterConfiguration {
         mapper.findAndRegisterModules();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-        // Customized annotation inspector. By default it tries to find all classes
+        // Customized annotation introspector. By default it tries to find all classes
         // annotated with @JsonFilter("name-of-filter"), but goal here was to
         // use only @AuditableEntity annotation on classes that we want to audit
         mapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector() {

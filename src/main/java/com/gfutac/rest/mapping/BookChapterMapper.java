@@ -19,6 +19,9 @@ public abstract class BookChapterMapper implements EntityToDtoMapper<BookChapter
 
     @Override
     public BookChapter toEntity(BookChapterDTO bookChapterDTO) {
-        return null;
+        var bookChapter = new BookChapter();
+        bookChapter.setName(bookChapterDTO.getName());
+
+        return bookChapter;
     }
 }
